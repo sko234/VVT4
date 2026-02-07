@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Discover and connect with amazing people on Nexus.">
+    <title>Discover | Nexus</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .discover-header {
+            padding: var(--space-6) 0;
+            position: sticky;
+            top: 72px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            z-index: 50;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .filter-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-3);
+            align-items: center;
+            margin-top: var(--space-4);
+        }
+
+        .user-card {
+            transition: all var(--transition-base);
+        }
+
+        .user-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .intent-badge {
+            font-size: var(--font-size-xs);
+            padding: var(--space-1) var(--space-2);
+            border-radius: var(--radius-full);
+            text-transform: capitalize;
+        }
+
+        .intent-dating {
+            background: linear-gradient(135deg, #ec4899, #f43f5e);
+            color: white;
+        }
+
+        .intent-friendship {
+            background: linear-gradient(135deg, #10b981, #14b8a6);
+            color: white;
+        }
+
+        .intent-both {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+            color: white;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: var(--space-16);
+            color: var(--text-tertiary);
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="container navbar-content">
+            <a href="discover.html" class="navbar-brand">
+                <div class="navbar-logo">N</div>
+                <span>Nexus</span>
+            </a>
+            <div class="navbar-actions">
+                <button class="btn btn-ghost btn-sm" id="myProfileBtn">My Profile</button>
+                <button class="theme-toggle" aria-label="Toggle theme">
+                    <div class="theme-toggle-thumb">
+                        <svg class="theme-toggle-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                            fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                    </div>
+                </button>
+                <button class="btn btn-ghost btn-sm" id="signOutBtn">Sign Out</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="page-wrapper">
+        <!-- Search & Filters -->
+        <div class="discover-header">
+            <div class="container">
+                <div class="search-container mx-auto">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="m21 21-4.35-4.35" />
+                    </svg>
+                    <input type="text" id="searchInput" class="search-input" placeholder="Search by name or bio...">
+                </div>
+                <div class="filter-section">
+                    <span class="text-sm text-secondary">Filters:</span>
+                    <div class="flex gap-2 flex-wrap">
+                        <button class="pill active" data-filter="all" data-type="intent">All</button>
+                        <button class="pill" data-filter="dating" data-type="intent">Dating</button>
+                        <button class="pill" data-filter="friendship" data-type="intent">Friendship</button>
+                        <button class="pill" data-filter="both" data-type="intent">Both</button>
+                    </div>
+                    <select id="genderFilter" class="form-select"
+                        style="width: auto; padding: var(--space-2) var(--space-8) var(--space-2) var(--space-3); font-size: var(--font-size-sm);">
+                        <option value="">All Genders</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Non-binary">Non-binary</option>
+                    </select>
+                    <select id="locationFilter" class="form-select"
+                        style="width: auto; padding: var(--space-2) var(--space-8) var(--space-2) var(--space-3); font-size: var(--font-size-sm);">
+                        <option value="">All Locations</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Grid -->
+        <div class="container py-8">
+            <div id="userGrid" class="user-grid"></div>
+            <div id="noResults" class="no-results" style="display: none;">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"
+                    style="margin: 0 auto var(--space-4);">
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.35-4.35" />
+                </svg>
+                <p class="text-lg mb-2">No users found</p>
+                <p>Try adjusting your search or filters</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Profile Modal -->
+    <div id="profileModal" class="modal-overlay">
+        <div class="modal modal-lg">
+            <div class="modal-header">
+                <h2 class="heading-3" id="modalName">User Name</h2>
+                <button class="btn btn-ghost btn-icon-sm" id="closeModal">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="flex flex-col items-center mb-6">
+                    <img id="modalAvatar" class="avatar-xl mb-4" src="" alt="Profile photo">
+                    <div class="flex items-center gap-2 text-secondary mb-2">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                            <circle cx="12" cy="10" r="3" />
+                        </svg>
+                        <span id="modalLocation">Location</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <span class="badge" id="modalGender">Gender</span>
+                        <span class="badge badge-primary" id="modalIntent">Intent</span>
+                    </div>
+                </div>
+                <div class="mb-6">
+                    <h4 class="font-semibold mb-2">About</h4>
+                    <p class="text-secondary" id="modalBio">Bio text here...</p>
+                </div>
+                <div id="socialLinks" class="social-links mb-6" style="display: none;"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary btn-lg" onclick="window.location.href='video-chat.html'">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="23 7 16 12 23 17 23 7" />
+                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+                    </svg>
+                    Start Video Chat
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/mock-data.js"></script>
+    <script src="js/discover.js"></script>
+</body>
+
+</html>
